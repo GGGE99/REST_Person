@@ -7,7 +7,7 @@ import exceptions.PersonNotFoundException;
 
 public interface IPersonFacade {
 
-    public PersonDTO addPerson(String fName, String lName, String phone);
+    public PersonDTO addPerson(String fName, String lName, String phone, String street, String zip, String city);
 
     public PersonDTO deletePerson(int id) throws PersonNotFoundException;
 
