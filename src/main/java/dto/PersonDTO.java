@@ -1,5 +1,6 @@
 package dto;
 
+import entities.Address;
 import entities.Person;
 
 public class PersonDTO {
@@ -8,6 +9,7 @@ public class PersonDTO {
     private String fName;
     private String lName;
     private String phone;
+    private Address address;
 
     public PersonDTO(Person p) {
         this.fName = p.getfName();
@@ -22,6 +24,14 @@ public class PersonDTO {
         this.phone = phone;
     }
 
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+    
     public long getId() {
         return id;
     }

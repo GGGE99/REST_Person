@@ -63,7 +63,7 @@ public class PersonResource {
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     @Path("{id}")
-    public String editPerson(String person, @PathParam("id") int id) {
+    public String editPerson(String person, @PathParam("id") int id) throws PersonNotFoundException {
         PersonDTO p = GSON.fromJson(person, PersonDTO.class);
         p.setId(id);
         PersonDTO pEdited = FACADE.editPerson(p);
