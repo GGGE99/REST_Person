@@ -1,12 +1,15 @@
 package rest;
 
+import dto.PersonDTO;
 import entities.Address;
 import entities.Person;
 import utils.EMF_Creator;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import static io.restassured.RestAssured.given;
 import io.restassured.parsing.Parser;
 import java.net.URI;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
@@ -14,11 +17,14 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 //Uncomment the line below, to temporarily disable this test
 
@@ -99,14 +105,72 @@ public class PersonResourceTest {
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .body("msg", equalTo("Your Person API is up and running"));
     }
-//
-//    @Test
-//    public void testCount() throws Exception {
-//        given()
-//                .contentType("application/json")
-//                .get("/xxx/count").then()
-//                .assertThat()
-//                .statusCode(HttpStatus.OK_200.getStatusCode())
-//                .body("count", equalTo(2));
-//    }
+
+    @Test
+    public void getAllPersons() {
+        List<PersonDTO> personsDTOs;
+
+        personsDTOs = given()
+                .contentType("application/json")
+                .when()
+                .get("/person/all")
+                .then()
+                .extract().body().jsonPath().getList("all", PersonDTO.class);
+
+        PersonDTO p1DTO = new PersonDTO(p1);
+        PersonDTO p2DTO = new PersonDTO(p2);
+        PersonDTO p3DTO = new PersonDTO(p3);
+
+        assertThat(personsDTOs, containsInAnyOrder(samePropertyValuesAs(p1DTO), samePropertyValuesAs(p2DTO), samePropertyValuesAs(p3DTO)));
+    }
+
+    @Test
+    public void addPerson() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(new PersonDTO("Marc", "Ekstrom", "11112222", "Who knows", "5599", "IDK"))
+                .when()
+                .post("person")
+                .then()
+                .body("fName", equalTo("Marc"))
+                .body("lName", equalTo("Ekstrom"))
+                .body("phone", equalTo("11112222"))
+                .body("id", notNullValue())
+                .body("street", equalTo("Who knows"))
+                .body("zip", equalTo("5599"))
+                .body("city", equalTo("IDK"));
+    }
+
+    @Test
+    public void updatePerson() {
+        PersonDTO person = new PersonDTO(p3);
+        person.setPhone("12345678");
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(person)
+                .when()
+                .put("person/" + person.getId())
+                .then()
+                .body("fName", equalTo("Hans"))
+                .body("lName", equalTo("Madssen"))
+                .body("phone", equalTo("12345678"))
+                .body("id", equalTo((int) person.getId()));
+    }
+
+    @Test
+    public void testDelete() throws Exception {
+
+        PersonDTO person = new PersonDTO(p1);
+
+        given()
+                .contentType("application/json")
+                .delete("/person/" + person.getId())
+                .then()
+                .assertThat()
+                .body("fName", equalTo(person.getfName()))
+                .body("lName", equalTo(person.getlName()))
+                .body("id", equalTo(person.getId()));
+
+    }
 }
