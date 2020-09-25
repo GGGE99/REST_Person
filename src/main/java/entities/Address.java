@@ -1,13 +1,17 @@
 package entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 @Entity
+@NamedQuery(name = "Address.deleteAllRows", query = "DELETE from Address")
 public class Address implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -17,8 +21,9 @@ public class Address implements Serializable {
     private String street;
     private String zip;
     private String city;
-    @OneToOne(mappedBy = "address")
-    private Person person;
+    
+    @OneToMany(mappedBy = "address")
+    private List<Person> persons;
 
     public Address() {
     }
@@ -27,8 +32,19 @@ public class Address implements Serializable {
         this.street = street;
         this.zip = zip;
         this.city = city;
+        persons = new ArrayList<>();
     }
 
+    public List<Person> getPersons() {
+        return persons;
+    }
+
+    public void addPerson(Person person) {
+        if(person != null){
+            persons.add(person);
+        }
+    }
+    
     public String getStreet() {
         return street;
     }

@@ -5,7 +5,7 @@ import entities.Person;
 
 public class PersonDTO {
 
-    private long id;
+    private Integer id;
     private String fName;
     private String lName;
     private String phone;
@@ -29,8 +29,7 @@ public class PersonDTO {
         this.phone = phone;
     }
 
-    public PersonDTO(long id, String fName, String lName, String phone, String street, String zip, String city) {
-        this.id = id;
+    public PersonDTO(String fName, String lName, String phone, String street, String zip, String city) {
         this.fName = fName;
         this.lName = lName;
         this.phone = phone;
@@ -63,11 +62,11 @@ public class PersonDTO {
         this.city = city;
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
